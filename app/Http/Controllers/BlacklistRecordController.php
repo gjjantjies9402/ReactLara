@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlacklistRecord;
 use App\Models\School;
 use App\Models\StudentTeacher;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class BlacklistRecordController extends Controller
@@ -15,7 +16,9 @@ class BlacklistRecordController extends Controller
     public function index()
     {
         $blacklistRecords = BlacklistRecord::with(['school', 'studentTeacher'])->get();
-        return view('blacklistRecords.index', compact('blacklistRecords')); // View for listing blacklist records
+        return Inertia::render('BlacklistRecord/BlacklistRecord', [
+            'blacklistRecords' => $blacklistRecords,
+        ]);
     }
 
     /**
@@ -25,7 +28,10 @@ class BlacklistRecordController extends Controller
     {
         $schools = School::all();
         $studentTeachers = StudentTeacher::all();
-        return view('blacklistRecords.create', compact('schools', 'studentTeachers')); // View for creating a new blacklist record
+        return Inertia::render('BlacklistRecords/Create', [
+            'schools' => $schools,
+            'studentTeachers' => $studentTeachers,
+        ]);
     }
 
     /**
@@ -56,7 +62,9 @@ class BlacklistRecordController extends Controller
      */
     public function show(BlacklistRecord $blacklistRecord)
     {
-        return view('blacklistRecords.show', compact('blacklistRecord')); // View for displaying a single blacklist record
+        return Inertia::render('BlacklistRecords/Show', [
+            'blacklistRecord' => $blacklistRecord,
+        ]);
     }
 
     /**
@@ -66,7 +74,11 @@ class BlacklistRecordController extends Controller
     {
         $schools = School::all();
         $studentTeachers = StudentTeacher::all();
-        return view('blacklistRecords.edit', compact('blacklistRecord', 'schools', 'studentTeachers')); // View for editing a blacklist record
+        return Inertia::render('BlacklistRecords/Edit', [
+            'blacklistRecord' => $blacklistRecord,
+            'schools' => $schools,
+            'studentTeachers' => $studentTeachers,
+        ]);
     }
 
     /**

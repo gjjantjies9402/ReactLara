@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StudentTeacher;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class StudentTeacherController extends Controller
@@ -13,7 +14,9 @@ class StudentTeacherController extends Controller
     public function index()
     {
         $studentTeachers = StudentTeacher::all();
-        return view('studentTeachers.index', compact('studentTeachers')); // View for listing student teachers
+        return Inertia::render('StudentTeachers/StudentTeachers', [
+            'studentTeachers' => $studentTeachers,
+        ]);
     }
 
     /**
@@ -21,7 +24,7 @@ class StudentTeacherController extends Controller
      */
     public function create()
     {
-        return view('studentTeachers.create'); // View for creating a new student teacher
+        return Inertia::render('StudentTeachers/Create');
     }
 
     /**
@@ -48,7 +51,9 @@ class StudentTeacherController extends Controller
      */
     public function show(StudentTeacher $studentTeacher)
     {
-        return view('studentTeachers.show', compact('studentTeacher')); // View for displaying a single student teacher's details
+        return Inertia::render('StudentTeachers/Show', [
+            'studentTeacher' => $studentTeacher,
+        ]);
     }
 
     /**
@@ -56,7 +61,9 @@ class StudentTeacherController extends Controller
      */
     public function edit(StudentTeacher $studentTeacher)
     {
-        return view('studentTeachers.edit', compact('studentTeacher')); // View for editing a student teacher
+        return Inertia::render('StudentTeachers/StudentTeachers', [
+            'studentTeacher' => $studentTeacher,
+        ]);
     }
 
     /**

@@ -8,8 +8,7 @@ import { useState } from "react";
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -36,18 +35,17 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Schools
                                 </NavLink>
-
                                 <NavLink
-                                    href={route("dashboard")}
-                                    active={route().current("dashboard")}
+                                    href={route("blacklist-records.index")}
+                                    active={route().current("blacklist-records.index")}
                                 >
                                     Blacklist
                                 </NavLink>
                                 <NavLink
-                                    href={route("dashboard")}
-                                    active={route().current("dashboard")}
+                                    href={route("student-teachers.index")}
+                                    active={route().current("student-teachers.index")}
                                 >
-                                    Student teachers
+                                    Student Teachers
                                 </NavLink>
                             </div>
                         </div>
@@ -60,9 +58,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                             <button
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                                aria-haspopup="true"
+                                                aria-expanded={showingNavigationDropdown ? "true" : "false"}
                                             >
                                                 {user.name}
-
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -80,9 +79,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route("profile.edit")}
-                                        >
+                                        <Dropdown.Link href={route("profile.edit")}>
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
@@ -100,9 +97,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="-me-2 flex items-center sm:hidden">
                             <button
                                 onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState
-                                    )
+                                    setShowingNavigationDropdown((previousState) => !previousState)
                                 }
                                 className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
                             >
@@ -113,22 +108,14 @@ export default function AuthenticatedLayout({ header, children }) {
                                     viewBox="0 0 24 24"
                                 >
                                     <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? "inline-flex"
-                                                : "hidden"
-                                        }
+                                        className={!showingNavigationDropdown ? "inline-flex" : "hidden"}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
                                         d="M4 6h16M4 12h16M4 18h16"
                                     />
                                     <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? "inline-flex"
-                                                : "hidden"
-                                        }
+                                        className={showingNavigationDropdown ? "inline-flex" : "hidden"}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
@@ -141,10 +128,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
 
                 <div
-                    className={
-                        (showingNavigationDropdown ? "block" : "hidden") +
-                        " sm:hidden"
-                    }
+                    className={(showingNavigationDropdown ? "block" : "hidden") + " sm:hidden"}
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
@@ -152,6 +136,24 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current("dashboard")}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("schools.index")}
+                            active={route().current("schools.index")}
+                        >
+                            Schools
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("blacklist-records.index")}
+                            active={route().current("blacklist-records.index")}
+                        >
+                            Blacklist
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("student-teachers.index")}
+                            active={route().current("student-teachers.index")}
+                        >
+                            Student Teachers
                         </ResponsiveNavLink>
                     </div>
 
