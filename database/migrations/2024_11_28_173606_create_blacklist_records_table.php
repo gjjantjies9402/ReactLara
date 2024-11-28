@@ -4,32 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateBlacklistRecordsTable extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('blacklist_records', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('student_teacher_id');
-        $table->unsignedBigInteger('school_id');
-        $table->text('reason');
-        $table->string('proof')->nullable();
-        $table->timestamps();
-
-        $table->foreign('student_teacher_id')->references('id')->on('student_teachers')->onDelete('cascade');
-        $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
-    });
-}
-
+    {
+        Schema::create('blacklist_records', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_teacher_id')->constrained()->onDelete('cascade');
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->text('reason');
+            $table->string('proof')->nullable();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('blacklist_records');
     }
-};
+}

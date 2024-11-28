@@ -12,7 +12,8 @@ class StudentTeacherController extends Controller
      */
     public function index()
     {
-        //
+        $studentTeachers = StudentTeacher::all();
+        return view('studentTeachers.index', compact('studentTeachers')); // View for listing student teachers
     }
 
     /**
@@ -20,7 +21,7 @@ class StudentTeacherController extends Controller
      */
     public function create()
     {
-        //
+        return view('studentTeachers.create'); // View for creating a new student teacher
     }
 
     /**
@@ -28,7 +29,18 @@ class StudentTeacherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'location_province' => 'required|string|max:255',
+            'location_city' => 'required|string|max:255',
+            'location_street' => 'required|string|max:255',
+            'university' => 'required|string|max:255',
+        ]);
+
+        StudentTeacher::create($request->all());
+
+        return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher added successfully!');
     }
 
     /**
@@ -36,7 +48,7 @@ class StudentTeacherController extends Controller
      */
     public function show(StudentTeacher $studentTeacher)
     {
-        //
+        return view('studentTeachers.show', compact('studentTeacher')); // View for displaying a single student teacher's details
     }
 
     /**
@@ -44,7 +56,7 @@ class StudentTeacherController extends Controller
      */
     public function edit(StudentTeacher $studentTeacher)
     {
-        //
+        return view('studentTeachers.edit', compact('studentTeacher')); // View for editing a student teacher
     }
 
     /**
@@ -52,7 +64,18 @@ class StudentTeacherController extends Controller
      */
     public function update(Request $request, StudentTeacher $studentTeacher)
     {
-        //
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'location_province' => 'required|string|max:255',
+            'location_city' => 'required|string|max:255',
+            'location_street' => 'required|string|max:255',
+            'university' => 'required|string|max:255',
+        ]);
+
+        $studentTeacher->update($request->all());
+
+        return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher updated successfully!');
     }
 
     /**
@@ -60,6 +83,8 @@ class StudentTeacherController extends Controller
      */
     public function destroy(StudentTeacher $studentTeacher)
     {
-        //
+        $studentTeacher->delete();
+
+        return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher deleted successfully!');
     }
 }
