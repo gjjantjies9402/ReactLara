@@ -11,11 +11,6 @@ A school records should contain at least the following information: School name 
 When navigating to the school’s page, I should be able to access a list of student teachers that have been blacklisted by the school
 When navigating to a specific student teacher page, I should see a list of all school that have blacklisted the student teacher, and be able to expand each blacklisting item to see all the details if need be
 
-
-Here's the updated README with SQLite details:  
-
----
-
 #  Student Teachers Blacklist Management System  
 
 This project is a Laravel-based web application to manage student teachers, schools, and blacklist records. It uses SQLite as the database.  
