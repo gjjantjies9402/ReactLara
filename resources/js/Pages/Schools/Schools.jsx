@@ -4,9 +4,9 @@ import AddSchoolModal from "@/Components/AddSchoolModal";
 import axios from "axios";
 import NavLink from "@/Components/NavLink";
 
-export default function Schools({ schools: initialSchools }) {
-    const [schools, setSchools] = useState(initialSchools); // Updated state name
-    const [filteredSchools, setFilteredSchools] = useState(initialSchools);
+export default function Schools({schools}) {
+    const [school,setSchools] = useState([]);
+    const [filteredSchools, setFilteredSchools] = useState(schools);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,34 +19,44 @@ export default function Schools({ schools: initialSchools }) {
 
     // Fetch schools from the API if not passed as prop
     useEffect(() => {
-        if (!initialSchools || initialSchools.length === 0) {
-            const fetchSchools = async () => {
-                try {
-                    const response = await axios.get("/api/schools");
-                    if (Array.isArray(response.data)) {
-                        setSchools(response.data);
-                        setFilteredSchools(response.data);
-                    }
-                } catch (error) {
-                    console.error("Error fetching schools:", error);
+        const fetchSchools = async () => {
+            try {
+                const response = await axios.get("/api/schools");
+                console.log(response.data); 
+                if (Array.isArray(response.data)) {
+                    setSchools(response.data);
+                    console.log("Schools fetched successfully!", response.data);
+                } else {
+                    console.error(
+                        "Response data is not an array:",
+                        response.data
+                    );
                 }
-            };
-            fetchSchools();
-        }
-    }, [initialSchools]);
+            } catch (error) {
+                console.error("Error fetching schools:", error);
+            }
+        };
+        fetchSchools();
+    }, []);
 
     // Filter schools based on search query and status filter
     useEffect(() => {
-        const filtered = schools.filter((school) => {
-            const matchesSearch =
-                school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                school.location
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase());
-            const matchesStatus =
-                statusFilter === "" || school.status === statusFilter;
-            return matchesSearch && matchesStatus;
-        });
+        const filtered = Array.isArray(schools)
+            ? schools.filter((school) => {
+                  const matchesSearch =
+                      school.name
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()) ||
+                      school.location
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase());
+                  const matchesStatus =
+                      statusFilter === "" || school.status === statusFilter;
+
+                  return matchesSearch && matchesStatus;
+              })
+            : [];
+
         setFilteredSchools(filtered);
     }, [searchQuery, statusFilter, schools]);
 
@@ -273,6 +283,7 @@ export default function Schools({ schools: initialSchools }) {
                                                                     </span>
                                                                 </td>
                                                                 <td className="p-4 border border-gray-200">
+                                                                  
                                                                     <NavLink
                                                                         href={route(
                                                                             "schools.edit",

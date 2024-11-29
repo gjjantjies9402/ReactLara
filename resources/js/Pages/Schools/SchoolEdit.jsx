@@ -9,6 +9,7 @@ export default function SchoolEdit() {
     const [updatedSchool, setUpdatedSchool] = useState(school); 
 
     useEffect(() => {
+        console.log(school);
         if (school) {
             const fetchStudentTeachers = async () => {
                 try {

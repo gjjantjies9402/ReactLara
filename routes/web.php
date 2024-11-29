@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/student-teachers', [StudentTeacherController::class, 'index']);
     Route::get('/student-teachers/{id}', [StudentTeacherController::class, 'show']);
     Route::put('/student-teachers/{id}', [StudentTeacherController::class, 'update']);
+    Route::get('/student-teachers/{studentTeacher}/edit', [StudentTeacherController::class, 'edit'])->name('studentTeacher.edit');
     
     Route::post('/api/blacklist-records', [BlacklistRecordController::class, 'store']);
     Route::post('/upload-csv-blacklist', [BlacklistRecordController::class, 'uploadCsv']);

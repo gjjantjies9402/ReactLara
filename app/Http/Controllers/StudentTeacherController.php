@@ -77,7 +77,7 @@ class StudentTeacherController extends Controller
      */
     public function edit(StudentTeacher $studentTeacher)
     {
-        return Inertia::render('StudentTeachers/StudentTeachers', [
+        return Inertia::render('StudentTeachers/StudentTeachersEdit', [
             'studentTeacher' => $studentTeacher,
         ]);
     }

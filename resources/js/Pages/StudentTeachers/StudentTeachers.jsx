@@ -2,15 +2,20 @@ import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import AddStudentTeacherModal from "@/Components/AddStudentTeacherModal";
 import axios from "axios";
-
+import NavLink from "@/Components/NavLink";
 export default function StudentTeachers({ studentTeachers }) {
-    const [studentTeacher, setStudentTeachers] = useState([]);
+    const [teachers, setTeachers] = useState([]);
     const [filteredTeachers, setFilteredTeachers] = useState(studentTeachers);
     const [isModalOpen, setModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [toastMessage, setToastMessage] = useState("");
     const [modalOpen, setModalsOpen] = useState(null);
+    const [isCardView, setIsCardView] = useState(true);
+
+    const toggleView = () => {
+        setIsCardView((prevView) => !prevView);
+    };
 
     const openModal = (teacherId) => {
         setModalsOpen(teacherId);
@@ -19,13 +24,14 @@ export default function StudentTeachers({ studentTeachers }) {
     const closeModal = () => {
         setModalsOpen(null);
     };
+
     // Fetch student teachers from the API
-    useEffect(() => {
+       useEffect(() => {
         const fetchStudentTeachers = async () => {
             try {
                 const response = await axios.get("/api/student-teachers");
                 if (Array.isArray(response.data)) {
-                    setStudentTeachers(response.data);
+                    setTeachers(response.data);
                     // setFilteredTeachers(response.data);
                 } else {
                     console.error(
@@ -40,6 +46,7 @@ export default function StudentTeachers({ studentTeachers }) {
         fetchStudentTeachers();
     }, []);
 
+
     // Close toast message after 3 seconds
     useEffect(() => {
         if (toastMessage) {
@@ -47,24 +54,23 @@ export default function StudentTeachers({ studentTeachers }) {
             return () => clearTimeout(timer);
         }
     }, [toastMessage]);
+
     // Filter student teachers when search query or status filter changes
     useEffect(() => {
-        const filtered = Array.isArray(studentTeachers)
-            ? studentTeachers.filter((teacher) => {
-                  const matchesSearch = teacher.first_name
-                      .toLowerCase()
-                      .includes(searchQuery.toLowerCase());
-                  const matchesStatus =
-                      statusFilter === "" || teacher.status === statusFilter;
+        const filtered = filteredTeachers.filter((teacher) => {
+            const matchesSearch = teacher.first_name
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            const matchesStatus =
+                statusFilter === "" || teacher.status === statusFilter;
 
-                  return matchesSearch && matchesStatus;
-              })
-            : [];
+            return matchesSearch && matchesStatus;
+        });
         setFilteredTeachers(filtered);
-    }, [searchQuery, statusFilter, studentTeachers]);
+    }, [searchQuery, statusFilter, filteredTeachers]);
+
     const handleCsvUpload = async (event) => {
         event.preventDefault();
-
         const formData = new FormData(event.target);
 
         try {
@@ -78,7 +84,7 @@ export default function StudentTeachers({ studentTeachers }) {
             const studentTeachersResponse = await axios.get(
                 "/api/student-teachers"
             );
-            setStudentTeachers(studentTeachersResponse.data);
+            setTeachers(studentTeachersResponse.data);
             setFilteredTeachers(studentTeachersResponse.data);
         } catch (error) {
             console.log("Error uploading CSV:", error.response || error);
@@ -92,15 +98,16 @@ export default function StudentTeachers({ studentTeachers }) {
                 "/api/student-teachers",
                 newStudentTeacher
             );
-            setSchools((prev) => [...prev, response.data]);
+            setTeachers((prev) => [...prev, response.data]);
             setFilteredTeachers((prev) => [...prev, response.data]);
             setModalOpen(false); // Close the modal
-            setToastMessage("School added successfully!");
+            setToastMessage("Student Teacher added successfully!");
         } catch (error) {
-            console.log("Error adding new school:", error);
-            setToastMessage("Failed to add the school?. Please try again.");
+            console.log("Error adding new student teacher:", error);
+            setToastMessage(
+                "Failed to add the student teacher. Please try again."
+            );
         }
-        // setStudentTeachers((prev) => [...prev, newStudentTeacher]);
     };
 
     return (
@@ -116,9 +123,6 @@ export default function StudentTeachers({ studentTeachers }) {
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
                             <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                                {/* <h1 className="text-xl font-semibold text-gray-700 mb-4 md:mb-0">
-                                    Student Teachers
-                                </h1> */}
                                 <div className="flex flex-col md:flex-row gap-4 items-center">
                                     <input
                                         type="text"
@@ -172,45 +176,41 @@ export default function StudentTeachers({ studentTeachers }) {
                                     </form>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {Array.isArray(filteredTeachers) &&
-                                filteredTeachers.length > 0 ? (
-                                    filteredTeachers.map((teacher) => (
-                                        <div
-                                            key={teacher?.id}
-                                            className="border border-gray-200 rounded-lg shadow-md p-4 bg-white hover:shadow-lg relative"
-                                        >
-                                            {/* Kebab menu button (three dots) */}
-                                            <div className="absolute top-2 right-2">
-                                                <button
-                                                    onClick={() =>
-                                                        openModal(teacher?.id)
-                                                    }
-                                                    className="text-gray-600 hover:text-gray-800"
-                                                    aria-label="Options"
-                                                >
-                                                    <span className="block w-1.5 h-1.5 bg-gray-600 rounded-full mb-1"></span>
-                                                </button>
-                                            </div>
-
-                                            <div className="mb-2">
+                            <div className="flex justify-between items-center mb-4">
+                                <button
+                                    onClick={toggleView}
+                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                                >
+                                    {isCardView
+                                        ? "Switch to Table View"
+                                        : "Switch to Card View"}
+                                </button>
+                            </div>
+                            {/* Card view for displaying student teachers */}
+                            {isCardView ? (
+                                // Card View
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {filteredTeachers.length > 0 ? (
+                                        filteredTeachers.map((teacher) => (
+                                            <div
+                                                key={teacher.id}
+                                                className="border p-4 rounded-lg shadow-md"
+                                            >
                                                 <h3 className="font-semibold text-lg">
-                                                    {teacher?.first_name}{" "}
-                                                    {teacher?.last_name}
+                                                    {teacher.first_name}{" "}
+                                                    {teacher.last_name}
                                                 </h3>
-                                            </div>
-                                            <div className="mb-2 text-sm text-gray-600">
-                                                <strong>Province:</strong>{" "}
-                                                {teacher?.location_province}
-                                            </div>
-                                            <div className="mb-2 text-sm text-gray-600">
-                                                <strong>School:</strong>{" "}
-                                                {teacher?.university}
-                                            </div>
-                                            <div>
+                                                <div className="text-sm text-gray-600">
+                                                    <strong>Province:</strong>{" "}
+                                                    {teacher.location_province}
+                                                </div>
+                                                <div className="text-sm text-gray-600">
+                                                    <strong>School:</strong>{" "}
+                                                    {teacher.university}
+                                                </div>
                                                 <span
                                                     className={`inline-block px-3 py-1 text-sm rounded-lg ${
-                                                        teacher?.status ===
+                                                        teacher.status ===
                                                         "notblacklisted"
                                                             ? "bg-green-100 text-green-600"
                                                             : "bg-red-100 text-red-600"
@@ -218,78 +218,117 @@ export default function StudentTeachers({ studentTeachers }) {
                                                 >
                                                     {teacher?.status ===
                                                     "notblacklisted"
-                                                        ? "Not Blacklisted"
-                                                        : "Blacklisted"}
+                                                        ? "not blacklisted"
+                                                        : "blacklisted"}
                                                 </span>
                                             </div>
-
-                                            {/* Conditional rendering for the modal */}
-                                            {modalOpen === teacher?.id && (
-                                                <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
-                                                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                                                        <h3 className="font-semibold text-lg mb-4">
-                                                            Teacher Details
-                                                        </h3>
-                                                        <p>
-                                                            <strong>
-                                                                Name:
-                                                            </strong>{" "}
-                                                            {
-                                                                teacher?.first_name
-                                                            }{" "}
-                                                            {teacher?.last_name}
-                                                        </p>
-                                                        <p>
-                                                            <strong>
-                                                                Province:
-                                                            </strong>{" "}
-                                                            {
-                                                                teacher?.location_province
-                                                            }
-                                                        </p>
-                                                        <p>
-                                                            <strong>
-                                                                School:
-                                                            </strong>{" "}
-                                                            {
-                                                                teacher?.university
-                                                            }
-                                                        </p>
-                                                        <p>
-                                                            <strong>
-                                                                Status:
-                                                            </strong>{" "}
-                                                            {teacher?.status ===
-                                                            "notblacklisted"
-                                                                ? "Not Blacklisted"
-                                                                : "Blacklisted"}
-                                                        </p>
-                                                        <div className="mt-4 flex justify-end gap-4">
-                                                            <button
-                                                                onClick={
-                                                                    closeModal
-                                                                }
-                                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                                                            >
-                                                                Close
-                                                            </button>
-                                                            {/* Add other modal actions here */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full text-center text-gray-500">
+                                            No Student Teachers found.
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="col-span-full text-center text-gray-500">
-                                        No Student Teachers found.
-                                    </div>
-                                )}
-                            </div>
+                                    )}
+                                </div>
+                            ) : (
+                                // Table View
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full table-auto border-collapse border border-gray-200 rounded-lg">
+                                        <thead>
+                                            <tr className="bg-gray-50">
+                                                <th className="text-left p-4 border border-gray-200">
+                                                    Name
+                                                </th>
+                                                <th className="text-left p-4 border border-gray-200">
+                                                    Province
+                                                </th>
+                                                <th className="text-left p-4 border border-gray-200">
+                                                    School
+                                                </th>
+                                                <th className="text-left p-4 border border-gray-200">
+                                                    Status
+                                                </th>
+                                                <th className="text-left p-4 border border-gray-200">
+                                                    Update
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredTeachers.length > 0 ? (
+                                                filteredTeachers.map(
+                                                    (teacher) => (
+                                                        <tr key={teacher.id}>
+                                                            <td className="p-4 border border-gray-200">
+                                                                {
+                                                                    teacher.first_name
+                                                                }{" "}
+                                                                {
+                                                                    teacher.last_name
+                                                                }
+                                                            </td>
+                                                            <td className="p-4 border border-gray-200">
+                                                                {
+                                                                    teacher.location_province
+                                                                }
+                                                            </td>
+                                                            <td className="p-4 border border-gray-200">
+                                                                {
+                                                                    teacher.university
+                                                                }
+                                                            </td>
+                                                            <td className="p-4 border border-gray-200">
+                                                                <span
+                                                                    className={`px-2 py-1 text-sm rounded-lg ${
+                                                                        teacher.status ===
+                                                                        "notblacklisted"
+                                                                            ? "bg-green-100 text-green-600"
+                                                                            : "bg-red-100 text-red-600"
+                                                                    }`}
+                                                                >
+                                                                    {teacher?.status ===
+                                                        "notblacklisted"
+                                                            ? "not blacklisted"
+                                                            : "blacklisted"}
+                                                                </span>
+                                                            </td>
+                                                            <td className="p-4 border border-gray-200">
+                                                                  
+                                                                  <NavLink
+                                                                      href={route(
+                                                                          "studentTeacher.edit",
+                                                                          {
+                                                                              studentTeacher: teacher.id,
+                                                                          }
+                                                                      )}
+                                                                      active={route().current(
+                                                                        "studentTeachers.edit"
+                                                                      )}
+                                                                  >
+                                                                      Edit
+                                                                  </NavLink>
+                                                              </td>
+                                                        </tr>
+                                                    )
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="5"
+                                                        className="text-center p-4 text-gray-500"
+                                                    >
+                                                        No Student Teachers
+                                                        found.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
             {toastMessage && (
                 <div className="fixed bottom-4 right-4 bg-gray-800 text-white py-2 px-4 rounded shadow-lg">
                     {toastMessage}
