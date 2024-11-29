@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateSchoolsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('province');
-            $table->string('city');
-            $table->string('street_address');
+            $table->string('location');
+            $table->string('email');
+            $table->enum('status', ['active', 'inactive']);
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down()
     {
         Schema::dropIfExists('schools');
     }
+    
 }

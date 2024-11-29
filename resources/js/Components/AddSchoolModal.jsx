@@ -1,88 +1,80 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function AddSchoolModal({ isOpen, onClose, onSubmit }) {
-    const [schoolName, setSchoolName] = useState("");
-    const [location, setLocation] = useState("");
-    const [email, setEmail] = useState("");
-    const [status, setStatus] = useState("active");
+export default function AddSchoolModal({ isOpen, onClose, onSave }) {
+    const [formData, setFormData] = useState({
+        name: "",
+        location: "",
+        email: "",
+        status: "active",
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ schoolName, location, email, status });
-        setSchoolName("");
-        setLocation("");
-        setEmail("");
-        setStatus("active");
-        onClose();
+        onSave(formData); // Pass the form data to the parent
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                <h2 className="text-xl font-semibold mb-4">Add New School</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Add New School
+                </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label
-                            htmlFor="schoolName"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label className="block text-gray-700 mb-2">
                             School Name
                         </label>
                         <input
                             type="text"
-                            id="schoolName"
-                            value={schoolName}
-                            onChange={(e) => setSchoolName(e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
                             required
+                            className="w-full border border-gray-300 rounded-lg p-2"
                         />
                     </div>
                     <div className="mb-4">
-                        <label
-                            htmlFor="location"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label className="block text-gray-700 mb-2">
                             Location
                         </label>
                         <input
                             type="text"
-                            id="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            name="location"
+                            value={formData.location}
+                            onChange={handleChange}
                             required
+                            className="w-full border border-gray-300 rounded-lg p-2"
                         />
                     </div>
                     <div className="mb-4">
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label className="block text-gray-700 mb-2">
                             Email
                         </label>
                         <input
                             type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
                             required
+                            className="w-full border border-gray-300 rounded-lg p-2"
                         />
                     </div>
                     <div className="mb-4">
-                        <label
-                            htmlFor="status"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label className="block text-gray-700 mb-2">
                             Status
                         </label>
                         <select
-                            id="status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg p-2"
                         >
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
@@ -92,13 +84,13 @@ export default function AddSchoolModal({ isOpen, onClose, onSubmit }) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
                         >
                             Add School
                         </button>

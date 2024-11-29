@@ -17,10 +17,10 @@ class School extends Model
      * @var array
      */
     protected $fillable = [
+        'email',
+        'location',
         'name',
-        'province',
-        'city',
-        'street_address',
+        'status',
     ];
 
     /**

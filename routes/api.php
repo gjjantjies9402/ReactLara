@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('/schools', [SchoolController::class, 'store']);
+Route::post('/api/schools', [SchoolController::class, 'store']);
 Route::get('/schools', [SchoolController::class, 'index']);
 Route::get('/schools/{id}', [SchoolController::class, 'show']);
 Route::put('/schools/{id}', [SchoolController::class, 'update']);

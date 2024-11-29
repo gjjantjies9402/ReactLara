@@ -8,7 +8,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentTeacherController;
 use App\Http\Controllers\BlacklistRecordController;
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -33,6 +32,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('student-teachers', StudentTeacherController::class);
     Route::resource('blacklist-records', BlacklistRecordController::class);
 
+
+    Route::post('/api/schools', [SchoolController::class, 'store']);
+    Route::post('/upload-csv', [SchoolController::class, 'uploadCsv']);
+    Route::get('/api/schools', [SchoolController::class, 'index']);
+    Route::get('/schools/{id}', [SchoolController::class, 'show']);
+    Route::put('/schools/{id}', [SchoolController::class, 'update']);
+
+    Route::post('/api/student-teachers', [StudentTeacherController::class, 'store']);
+    Route::post('/upload-csv-student', [StudentTeacherController::class, 'uploadCsv']);
+    Route::get('/api/student-teachers', [StudentTeacherController::class, 'index']);
+    Route::get('/student-teachers/{id}', [StudentTeacherController::class, 'show']);
+    Route::put('/student-teachers/{id}', [StudentTeacherController::class, 'update']);
     
 });
 

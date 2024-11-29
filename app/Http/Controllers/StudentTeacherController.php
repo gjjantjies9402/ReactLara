@@ -39,13 +39,29 @@ class StudentTeacherController extends Controller
             'location_city' => 'required|string|max:255',
             'location_street' => 'required|string|max:255',
             'university' => 'required|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'school_id' => 'required|exists:schools,id', // Ensure school_id exists
         ]);
-
-        StudentTeacher::create($request->all());
-
-        return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher added successfully!');
+    
+        // Get the school name from the schools table
+        $school = School::findOrFail($request->school_id);
+        $school_name = $school->name; // Assuming the school name is stored in the `name` column
+    
+        // Create the StudentTeacher
+        $studentTeacher = StudentTeacher::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'location_province' => $request->location_province,
+            'location_city' => $request->location_city,
+            'location_street' => $request->location_street,
+            'university' => $request->university,
+            'status' => $request->status,
+            'school_id' => $request->school_id,
+            'school_name' => $school_name, // Store the school name
+        ]);
+    
+        return redirect()->route('student-teachers.index')->with('success', 'Student Teacher added successfully!');
     }
-
     /**
      * Display the specified resource.
      */
@@ -78,11 +94,28 @@ class StudentTeacherController extends Controller
             'location_city' => 'required|string|max:255',
             'location_street' => 'required|string|max:255',
             'university' => 'required|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'school_id' => 'required|exists:schools,id', // Ensure school_id exists
         ]);
-
-        $studentTeacher->update($request->all());
-
-        return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher updated successfully!');
+    
+        // Get the school name from the schools table
+        $school = School::findOrFail($request->school_id);
+        $school_name = $school->name;
+    
+        // Update the StudentTeacher
+        $studentTeacher->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'location_province' => $request->location_province,
+            'location_city' => $request->location_city,
+            'location_street' => $request->location_street,
+            'university' => $request->university,
+            'status' => $request->status,
+            'school_id' => $request->school_id,
+            'school_name' => $school_name, // Update the school name
+        ]);
+    
+        return redirect()->route('student-teachers.index')->with('success', 'Student Teacher updated successfully!');
     }
 
     /**
@@ -93,5 +126,42 @@ class StudentTeacherController extends Controller
         $studentTeacher->delete();
 
         return redirect()->route('studentTeachers.index')->with('success', 'Student Teacher deleted successfully!');
+    }
+
+    public function uploadCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('csv_file');
+        $student_teachers = [];
+
+        // Process the CSV file
+        if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
+            $header = fgetcsv($handle); // Assuming the first row is the header
+            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                $studentTeachersData = array_combine($header, $row);
+                $student_teachers[] = $studentTeachersData;
+
+                // Insert each row into the database
+                StudentTeacher::create([
+                    'first_name' => $studentTeachersData['first_name'] ?? '',
+                    'last_name' => $studentTeachersData['last_name'] ?? '',
+                    'location_province' => $studentTeachersData['location_province'] ?? '',
+                    'location_city' => $studentTeachersData['location_city'] ?? '',
+                    'location_street' => $studentTeachersData['location_street'] ?? '',
+                    'university' => $studentTeachersData['university'] ?? '',
+                    'school_id' => $studentTeachersData['school_id'] ?? '',
+                    'status' => $studentTeachersData['status'] ?? 'inactive',
+                ]);
+            }
+            fclose($handle);
+        }
+
+        return response()->json([
+            'message' => 'CSV uploaded and processed successfully!',
+            'student_teachers' => $student_teachers,
+        ], 200);
     }
 }

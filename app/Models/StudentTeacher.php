@@ -17,12 +17,7 @@ class StudentTeacher extends Model
      * @var array
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'province',
-        'city',
-        'street_address',
-        'university',
+        'first_name', 'last_name', 'location_province', 'location_city', 'location_street', 'university', 'school_id', 'status'
     ];
 
     /**
