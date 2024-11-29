@@ -1,0 +1,31 @@
+first_name,last_name,location_province,location_city,location_street,university,school_id,status
+John,Doe,Cape Town,Cape Town,123 Main St,University of Cape Town,1,blacklisted
+Jane,Smith,Johannesburg,Johannesburg,456 Elm St,University of Johannesburg,2,blacklisted
+Mark,Taylor,Durban,Durban,789 Oak St,University of KwaZulu-Natal,3,notblacklisted
+Emily,Jones,Bloemfontein,Bloemfontein,101 Pine St,University of the Free State,4,blacklisted
+Michael,Johnson,Potchefstroom,Potchefstroom,202 Birch St,North-West University,5,notblacklisted
+Sarah,Lee,Stellenbosch,Stellenbosch,303 Cedar St,Stellenbosch University,6,blacklisted
+David,White,East London,East London,404 Maple St,University of Fort Hare,7,blacklisted
+Laura,Green,Pietermaritzburg,Pietermaritzburg,505 Elm St,University of KwaZulu-Natal,8,notblacklisted
+James,Black,Centurion,Centurion,606 Oak St,University of Pretoria,9,blacklisted
+Sophia,King,Rustenburg,Rustenburg,707 Pine St,North-West University,10,blacklisted
+Ben,Martin,Welkom,Welkom,808 Birch St,University of the Free State,11,notblacklisted
+Lily,Scott,Midrand,Midrand,909 Cedar St,University of Johannesburg,12,blacklisted
+Oliver,Adams,George,George,123 Oak St,University of Cape Town,13,blacklisted
+Chloe,Morris,Richards Bay,Richards Bay,234 Pine St,University of KwaZulu-Natal,14,blacklisted
+Lucas,Evans,Klerksdorp,Klerksdorp,345 Birch St,North-West University,15,notblacklisted
+Ella,Harris,Somerset West,Somerset West,456 Cedar St,Stellenbosch University,16,blacklisted
+Henry,Clark,Pretoria,Pretoria,567 Oak St,University of Pretoria,17,blacklisted
+Mia,Lopez,Bloemfontein,Bloemfontein,678 Pine St,University of the Free State,18,notblacklisted
+Ethan,Allen,Nelspruit,Nelspruit,789 Birch St,University of Cape Town,19,blacklisted
+Grace,Young,Mahikeng,Mahikeng,890 Cedar St,North-West University,20,notblacklisted
+Jack,Walker,Paarl,Paarl,901 Oak St,University of Stellenbosch,21,blacklisted
+Ruby,Hall,Newcastle,Newcastle,234 Pine St,University of Pretoria,22,blacklisted
+Aiden,Allen,Sandton,Sandton,345 Birch St,University of Johannesburg,23,notblacklisted
+Ella,Scott,Welkom,Welkom,456 Cedar St,University of the Free State,24,blacklisted
+Zoe,Martinez,Lichtenburg,Lichtenburg,567 Oak St,North-West University,25,notblacklisted
+Leo,Roberts,Durban,Durban,678 Pine St,University of KwaZulu-Natal,26,blacklisted
+Lilly,Miller,Ceres,Ceres,789 Birch St,Stellenbosch University,27,notblacklisted
+Nathan,Wilson,Lichtenburg,Lichtenburg,890 Cedar St,University of Pretoria,28,blacklisted
+Mason,Moore,Boksburg,Boksburg,901 Oak St,University of Cape Town,29,blacklisted
+Emma,Taylor,Welkom,Welkom,123 Pine St,University of Johannesburg,30,blacklisted

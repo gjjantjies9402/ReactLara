@@ -290,7 +290,7 @@ export default function StudentTeachers({ studentTeachers }) {
                                                             : "blacklisted"}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-4 border border-gray-200">
+                                                            {/* <td className="p-4 border border-gray-200">
                                                                   
                                                                   <NavLink
                                                                       href={route(
@@ -305,7 +305,7 @@ export default function StudentTeachers({ studentTeachers }) {
                                                                   >
                                                                       Edit
                                                                   </NavLink>
-                                                              </td>
+                                                              </td> */}
                                                         </tr>
                                                     )
                                                 )
