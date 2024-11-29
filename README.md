@@ -24,7 +24,7 @@ Ensure the following are installed on your system:
 - SQLite (comes pre-installed with most PHP distributions)  
 
 ## Installation  
-
+  # use the files in the CSV files folder to upload to bulk info
 ### Clone the Repository  
 ```bash  
 git clone <repository-url>  
@@ -98,3 +98,6 @@ Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) to access the application.
 
 - **Database not found**  
   Verify the `DB_DATABASE` path in `.env` and ensure the `database.sqlite` file exists.
+
+
+
