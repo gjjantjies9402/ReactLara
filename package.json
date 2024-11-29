@@ -23,8 +23,8 @@
     "dependencies": {
         "@emotion/react": "^11.13.5",
         "@emotion/styled": "^11.13.5",
+        "@inertiajs/inertia-react": "^0.8.1",
         "@mui/material": "^6.1.9",
-        "react-router-dom": "^7.0.1",
         "react-select": "^5.8.3"
     }
 }

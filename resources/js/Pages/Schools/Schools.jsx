@@ -1,55 +1,52 @@
 import { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import AddSchoolModal from "@/Components/AddSchoolModal"; 
+import AddSchoolModal from "@/Components/AddSchoolModal";
 import axios from "axios";
+import NavLink from "@/Components/NavLink";
 
-export default function Schools({ schools }) {
-    const [school, setSchools] = useState([]);
-    const [filteredSchools, setFilteredSchools] = useState(schools);
+export default function Schools({ schools: initialSchools }) {
+    const [schools, setSchools] = useState(initialSchools); // Updated state name
+    const [filteredSchools, setFilteredSchools] = useState(initialSchools);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [toastMessage, setToastMessage] = useState(""); 
-    const [selectedSchool, setSelectedSchool] = useState(null);
-    // Fetch schools from the API
+    const [toastMessage, setToastMessage] = useState("");
+    const [isCardView, setIsCardView] = useState(true);
+
+    const toggleView = () => {
+        setIsCardView((prevView) => !prevView);
+    };
+
+    // Fetch schools from the API if not passed as prop
     useEffect(() => {
-        const fetchSchools = async () => {
-            try {
-                const response = await axios.get("/api/schools");
-                console.log(response.data);
-                if (Array.isArray(response.data)) {
-                    setSchools(response.data);
-                    console.log("Schools fetched successfully!", response.data);
-                } else {
-                    console.error(
-                        "Response data is not an array:",
-                        response.data
-                    );
+        if (!initialSchools || initialSchools.length === 0) {
+            const fetchSchools = async () => {
+                try {
+                    const response = await axios.get("/api/schools");
+                    if (Array.isArray(response.data)) {
+                        setSchools(response.data);
+                        setFilteredSchools(response.data);
+                    }
+                } catch (error) {
+                    console.error("Error fetching schools:", error);
                 }
-            } catch (error) {
-                console.error("Error fetching schools:", error);
-            }
-        };
-        fetchSchools();
-    }, []);
+            };
+            fetchSchools();
+        }
+    }, [initialSchools]);
 
+    // Filter schools based on search query and status filter
     useEffect(() => {
-        const filtered = Array.isArray(schools)
-            ? schools.filter((school) => {
-                  const matchesSearch =
-                      school.name
-                          .toLowerCase()
-                          .includes(searchQuery.toLowerCase()) ||
-                      school.location
-                          .toLowerCase()
-                          .includes(searchQuery.toLowerCase());
-                  const matchesStatus =
-                      statusFilter === "" || school.status === statusFilter;
-
-                  return matchesSearch && matchesStatus;
-              })
-            : [];
-
+        const filtered = schools.filter((school) => {
+            const matchesSearch =
+                school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                school.location
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase());
+            const matchesStatus =
+                statusFilter === "" || school.status === statusFilter;
+            return matchesSearch && matchesStatus;
+        });
         setFilteredSchools(filtered);
     }, [searchQuery, statusFilter, schools]);
 
@@ -61,8 +58,8 @@ export default function Schools({ schools }) {
             setIsModalOpen(false); // Close the modal
             setToastMessage("School added successfully!");
         } catch (error) {
-            console.log("Error adding new school:", error);
-            setToastMessage("Failed to add the school?. Please try again.");
+            console.error("Error adding new school:", error);
+            setToastMessage("Failed to add the school. Please try again.");
         }
     };
 
@@ -72,17 +69,17 @@ export default function Schools({ schools }) {
         const formData = new FormData(event.target);
 
         try {
-            const response = await axios.post("/upload-csv", formData, {
+            await axios.post("/upload-csv", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
             setToastMessage("CSV upload completed successfully!");
-            const schoolsResponse = await axios.get("/api/schools");
-            setSchools(schoolsResponse.data);
-            setFilteredSchools(schoolsResponse.data);
+            const response = await axios.get("/api/schools");
+            setSchools(response.data);
+            setFilteredSchools(response.data);
         } catch (error) {
-            console.log("Error uploading CSV:", error.response || error);
+            console.error("Error uploading CSV:", error);
             setToastMessage("CSV upload failed. Please try again.");
         }
     };
@@ -159,46 +156,152 @@ export default function Schools({ schools }) {
                                     </form>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {Array.isArray(filteredSchools) &&
-                                filteredSchools.length > 0 ? (
-                                    filteredSchools.map((school) => (
-                                        <div
-                                            key={school?.id}
-                                            className="border border-gray-200 rounded-lg shadow-md p-4 bg-white hover:shadow-lg"
-                                        >
-                                            <div className="mb-2">
-                                                <h3 className="font-semibold text-lg">
-                                                    {school?.name}
-                                                </h3>
-                                            </div>
-                                            <div className="mb-2 text-sm text-gray-600">
-                                                <strong>Location:</strong>{" "}
-                                                {school?.location}
-                                            </div>
-                                            <div className="mb-2 text-sm text-gray-600">
-                                                <strong>Email:</strong>{" "}
-                                                {school?.email}
-                                            </div>
-                                            <div>
-                                                <span
-                                                    className={`inline-block px-3 py-1 text-sm rounded-lg ${
-                                                        school?.status ===
-                                                        "active"
-                                                            ? "bg-green-100 text-green-600"
-                                                            : "bg-red-100 text-red-600"
-                                                    }`}
+                            <div>
+                                {/* Toggle View Button */}
+                                <div className="flex justify-between items-center mb-4">
+                                    <button
+                                        onClick={toggleView}
+                                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                                    >
+                                        {isCardView
+                                            ? "Switch to Table View"
+                                            : "Switch to Card View"}
+                                    </button>
+                                </div>
+
+                                {/* Conditional Rendering: Card View or Table View */}
+                                {isCardView ? (
+                                    // Card View
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        {filteredSchools.length > 0 ? (
+                                            filteredSchools.map((school) => (
+                                                <div
+                                                    key={school.id}
+                                                    className="border p-4 rounded-lg shadow-md"
                                                 >
-                                                    {school?.status === "active"
-                                                        ? "Active"
-                                                        : "Inactive"}
-                                                </span>
+                                                    <h3 className="font-semibold text-lg">
+                                                        {school.name}
+                                                    </h3>
+                                                    <div className="text-sm text-gray-600">
+                                                        <strong>
+                                                            Location:
+                                                        </strong>{" "}
+                                                        {school.location}
+                                                    </div>
+                                                    <div className="text-sm text-gray-600">
+                                                        <strong>Email:</strong>{" "}
+                                                        {school.email}
+                                                    </div>
+                                                    <span
+                                                        className={`inline-block px-3 py-1 text-sm rounded-lg ${
+                                                            school.status ===
+                                                            "active"
+                                                                ? "bg-green-100 text-green-600"
+                                                                : "bg-red-100 text-red-600"
+                                                        }`}
+                                                    >
+                                                        {school.status ===
+                                                        "active"
+                                                            ? "Active"
+                                                            : "Inactive"}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="col-span-full text-center text-gray-500">
+                                                No schools found.
                                             </div>
-                                        </div>
-                                    ))
+                                        )}
+                                    </div>
                                 ) : (
-                                    <div className="col-span-full text-center text-gray-500">
-                                        No schools found.
+                                    // Table View
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full table-auto border-collapse border border-gray-200 rounded-lg">
+                                            <thead>
+                                                <tr className="bg-gray-50">
+                                                    <th className="text-left p-4 border border-gray-200">
+                                                        Name
+                                                    </th>
+                                                    <th className="text-left p-4 border border-gray-200">
+                                                        Location
+                                                    </th>
+                                                    <th className="text-left p-4 border border-gray-200">
+                                                        Email
+                                                    </th>
+                                                    <th className="text-left p-4 border border-gray-200">
+                                                        Status
+                                                    </th>
+                                                    <th className="text-left p-4 border border-gray-200">
+                                                        Update
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredSchools.length > 0 ? (
+                                                    filteredSchools.map(
+                                                        (school) => (
+                                                            <tr key={school.id}>
+                                                                <td className="p-4 border border-gray-200">
+                                                                    {
+                                                                        school.name
+                                                                    }
+                                                                </td>
+
+                                                                <td className="p-4 border border-gray-200">
+                                                                    {
+                                                                        school.location
+                                                                    }
+                                                                </td>
+                                                                <td className="p-4 border border-gray-200">
+                                                                    {
+                                                                        school.email
+                                                                    }
+                                                                </td>
+                                                                <td className="p-4 border border-gray-200">
+                                                                    <span
+                                                                        className={`px-2 py-1 text-sm rounded-lg ${
+                                                                            school.status ===
+                                                                            "active"
+                                                                                ? "bg-green-100 text-green-600"
+                                                                                : "bg-red-100 text-red-600"
+                                                                        }`}
+                                                                    >
+                                                                        {school.status ===
+                                                                        "active"
+                                                                            ? "Active"
+                                                                            : "Inactive"}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-4 border border-gray-200">
+                                                                    <NavLink
+                                                                        href={route(
+                                                                            "schools.edit",
+                                                                            {
+                                                                                school: school.id,
+                                                                            }
+                                                                        )}
+                                                                        active={route().current(
+                                                                            "schools.edit"
+                                                                        )}
+                                                                    >
+                                                                        Edit
+                                                                    </NavLink>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )
+                                                ) : (
+                                                    <tr>
+                                                        <td
+                                                            colSpan="4"
+                                                            className="text-center p-4 text-gray-500"
+                                                        >
+                                                            No schools found.
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 )}
                             </div>

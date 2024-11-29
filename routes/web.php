@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/schools', [SchoolController::class, 'index']);
     Route::get('/schools/{id}', [SchoolController::class, 'show']);
     Route::put('/schools/{id}', [SchoolController::class, 'update']);
+    Route::get('/schools/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit');
+
 
     Route::post('/api/student-teachers', [StudentTeacherController::class, 'store']);
     Route::post('/upload-csv-student', [StudentTeacherController::class, 'uploadCsv']);

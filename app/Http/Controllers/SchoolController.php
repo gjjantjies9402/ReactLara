@@ -65,7 +65,7 @@ class SchoolController extends Controller
      */
     public function edit(School $school)
     {
-        return Inertia::render('Schools/Edit', ['school' => $school]); 
+        return Inertia::render('Schools/SchoolEdit', ['school' => $school]); 
     }
 
     /**
