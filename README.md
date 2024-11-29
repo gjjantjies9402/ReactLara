@@ -1,66 +1,100 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Blacklist
+Develop a system that will be used to blacklist student teachers for bad behavior. The system will keep record of numerous student teachers and numerous schools in South Africa.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The system should have authentication in place so that only authorized users can use it. There is no need for sign-up functionality.
+The system should allow a logged-in user to import a list of student teachers in bulk. This can either be a simple CSV import with a list of student teachers.
+A logged in user should be able to manually add, edit and delete a school or student teacher
+The system should allow searching records. In other words, I should be able to search for a specific school by name or a student teacher by name
+A user should be able to blacklist a student because of bad behavior at a school. A blacklisting record should contain the reason for blacklisting, the school where bad behavior was recorded, any pictures or proof of such bad behavior can be uploaded (images, voice recording, etc)
+Student teacher records should contain the following information: First name, Last name, Location (Province, City, Street Address, etc), University
+A school records should contain at least the following information: School name and Location
+When navigating to the school’s page, I should be able to access a list of student teachers that have been blacklisted by the school
+When navigating to a specific student teacher page, I should see a list of all school that have blacklisted the student teacher, and be able to expand each blacklisting item to see all the details if need be
 
-## About Laravel
+#  Student Teachers Blacklist Management System  
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is a Laravel-based web application to manage student teachers, schools, and blacklist records. It uses SQLite as the database.  
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Ensure the following are installed on your system:  
+- [PHP 8.1+](https://www.php.net/)  
+- [Composer](https://getcomposer.org/)  
+- [Node.js 18+](https://nodejs.org/)  
+- SQLite (comes pre-installed with most PHP distributions)  
 
-## Learning Laravel
+## Installation  
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Clone the Repository  
+```bash  
+git clone <repository-url>  
+cd <repository-folder>  
+```  
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Install PHP Dependencies  
+```bash  
+composer install  
+```  
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Install JavaScript Dependencies  
+```bash  
+npm install  
+```  
 
-## Laravel Sponsors
+### Setup Environment Variables  
+Copy the `.env.example` file to `.env` and configure it:  
+```bash  
+cp .env.example .env  
+```  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Update the database configuration in `.env`:  
+```env  
+DB_CONNECTION=sqlite  
+DB_DATABASE=/absolute/path/to/database.sqlite  
+```  
 
-### Premium Partners
+> **Note:** Create the `database.sqlite` file in your project directory if it doesn't exist:  
+> ```bash  
+> touch database/database.sqlite  
+> ```  
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Run Migrations and Seeders  
+Run the migrations to create database tables:  
+```bash  
+php artisan migrate  
+```  
 
-## Contributing
+(Optional) Seed the database with sample data:  
+```bash  
+php artisan db:seed  
+```  
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Build Frontend Assets  
+```bash  
+npm run dev  
+```  
 
-## Code of Conduct
+## Running the Application  
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start the local development server:  
+```bash  
+php artisan serve  
+```  
 
-## Security Vulnerabilities
+Visit [http://127.0.0.1:8000](http://127.0.0.1:8000) to access the application.  
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Features  
+- Add, view, update, and delete student teachers.  
+- Assign student teachers to schools.  
+- Upload CSV files to bulk import data.  
+- Manage blacklist records.  
+- View statistics on the dashboard with charts.  
 
-## License
+## Troubleshooting  
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Common Errors  
+- **`[vite] Failed to resolve import`**  
+  Ensure `npm run dev` is running while accessing the application.  
+
+- **Database not found**  
+  Verify the `DB_DATABASE` path in `.env` and ensure the `database.sqlite` file exists.
