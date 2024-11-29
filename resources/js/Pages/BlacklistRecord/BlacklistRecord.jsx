@@ -3,26 +3,34 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import axios from "axios";
 import Select from "react-select"; // Install using `npm install react-select`
 
-export default function BlacklistRecord() {
-    const [blacklistedRecords, setBlacklistedRecords] = useState([]);
-    const [filteredRecords, setFilteredRecords] = useState([]);
+export default function BlacklistRecord({ blacklistedRecords }) {
+    const [blacklistedRecord, setBlacklistedRecords] = useState([]);
+    const [filteredRecords, setFilteredRecords] = useState(blacklistedRecords);
     const [selectedName, setSelectedName] = useState(null); // Selected option from the dropdown
     const [statusFilter, setStatusFilter] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [newRecord, setNewRecord] = useState({
         name: "",
         reason: "",
         date: "",
         status: "temporary", // Default status
     });
+    const [toastMessage, setToastMessage] = useState(""); // Toast notification
 
     // Fetch blacklisted records from the API
     useEffect(() => {
         const fetchBlacklistedRecords = async () => {
             try {
                 const response = await axios.get("/api/blacklisted");
-                setBlacklistedRecords(response.data);
-                setFilteredRecords(response.data);
+                if (Array.isArray(response.data)) {
+                    setBlacklistedRecords(response.data);
+                } else {
+                    console.error(
+                        "Response data is not an array:",
+                        response.data
+                    );
+                }
             } catch (error) {
                 console.error("Error fetching blacklisted records:", error);
             }
@@ -32,35 +40,64 @@ export default function BlacklistRecord() {
 
     // Filter blacklisted records based on name and status
     useEffect(() => {
-        const filtered = blacklistedRecords.filter((record) => {
-            const matchesName =
-                !selectedName || record.name === selectedName.value;
-            const matchesStatus =
-                statusFilter === "" || record.status === statusFilter;
+        const filtered = Array.isArray(blacklistedRecords)
+            ? blacklistedRecords.filter((record) => {
+                  const matchesName =
+                  record.reason
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                  record.name
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase());
+                  const matchesStatus =
+                      statusFilter === "" || record.status === statusFilter;
 
-            return matchesName && matchesStatus;
-        });
+                  return matchesName && matchesStatus;
+              })
+            : [];
         setFilteredRecords(filtered);
     }, [selectedName, statusFilter, blacklistedRecords]);
 
-    // Add a new blacklisted record
     const handleAddRecord = async () => {
         try {
             const response = await axios.post("/api/blacklisted", newRecord);
             const updatedRecords = [...blacklistedRecords, response.data];
             setBlacklistedRecords(updatedRecords);
             setIsModalOpen(false); // Close the modal after adding
-            setNewRecord({ name: "", reason: "", date: "", status: "temporary" }); // Reset form
+            setNewRecord({
+                name: "",
+                reason: "",
+                date: "",
+                status: "temporary",
+            }); // Reset form
         } catch (error) {
             console.error("Error adding new record:", error);
         }
     };
 
-    // Generate dropdown options for react-select
-    const nameOptions = blacklistedRecords.map((record) => ({
-        value: record.name,
-        label: record.name,
-    }));
+    const handleCsvUpload = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        try {
+            const response = await axios.post(
+                "/upload-csv-blacklist",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            setToastMessage("CSV upload completed successfully!");
+            const blacklistedResponse = await axios.get("/api/blacklisted");
+            setBlacklistedRecords(blacklistedResponse.data);
+            setFilteredRecords(blacklistedResponse.data);
+        } catch (error) {
+            console.log("Error uploading CSV:", error.response || error);
+            setToastMessage("CSV upload failed. Please try again.");
+        }
+    };
 
     return (
         <AuthenticatedLayout
@@ -80,15 +117,14 @@ export default function BlacklistRecord() {
                                     Blacklisted Records
                                 </h1>
                                 <div className="flex flex-col md:flex-row gap-4 items-center">
-                                    <Select
-                                        options={nameOptions}
-                                        isClearable
-                                        placeholder="Search by name"
-                                        value={selectedName}
-                                        onChange={(selectedOption) =>
-                                            setSelectedName(selectedOption)
+                                <input
+                                        type="text"
+                                        placeholder="Search by name or location"
+                                        value={searchQuery}
+                                        onChange={(e) =>
+                                            setSearchQuery(e.target.value)
                                         }
-                                        className="w-64"
+                                        className="p-2 border border-gray-300 rounded-lg"
                                     />
                                     <select
                                         value={statusFilter}
@@ -111,6 +147,26 @@ export default function BlacklistRecord() {
                                     >
                                         Add Blacklisted Record
                                     </button>
+                                    <form
+                                        id="csvUploadForm"
+                                        onSubmit={handleCsvUpload}
+                                        encType="multipart/form-data"
+                                        className="flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="file"
+                                            name="csv_file"
+                                            accept=".csv"
+                                            required
+                                            className="border border-gray-300 rounded-lg p-2"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                        >
+                                            Upload CSV
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
 
@@ -133,42 +189,48 @@ export default function BlacklistRecord() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredRecords.map((record) => (
-                                        <tr
-                                            key={record.id}
-                                            className="hover:bg-gray-50"
-                                        >
-                                            <td className="p-4">{record.name}</td>
-                                            <td className="p-4">{record.reason}</td>
-                                            <td className="p-4">
-                                                {new Date(
-                                                    record.date
-                                                ).toLocaleDateString()}
-                                            </td>
-                                            <td className="p-4">
-                                                <span
-                                                    className={`px-2 py-1 text-sm rounded-lg ${
-                                                        record.status ===
+                                    {Array.isArray(filteredRecords) &&
+                                    filteredRecords.length > 0 ? (
+                                        filteredRecords.map((record) => (
+                                            <tr
+                                                key={record.id}
+                                                className="hover:bg-gray-50"
+                                            >
+                                                <td className="p-4">
+                                                    {record.name}
+                                                </td>
+                                                <td className="p-4">
+                                                    {record.reason}
+                                                </td>
+                                                <td className="p-4">
+                                                    {new Date(
+                                                        record.date
+                                                    ).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-4">
+                                                    <span
+                                                        className={`px-2 py-1 text-sm rounded-lg ${
+                                                            record.status ===
+                                                            "permanent"
+                                                                ? "bg-red-100 text-red-600"
+                                                                : "bg-yellow-100 text-yellow-600"
+                                                        }`}
+                                                    >
+                                                        {record.status ===
                                                         "permanent"
-                                                            ? "bg-red-100 text-red-600"
-                                                            : "bg-yellow-100 text-yellow-600"
-                                                    }`}
-                                                >
-                                                    {record.status ===
-                                                    "permanent"
-                                                        ? "Permanent"
-                                                        : "Temporary"}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {filteredRecords.length === 0 && (
+                                                            ? "Permanent"
+                                                            : "Temporary"}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
                                         <tr>
                                             <td
                                                 colSpan="4"
                                                 className="text-center p-4 text-gray-500"
                                             >
-                                                No blacklisted records found.
+                                                No backlisted records found.
                                             </td>
                                         </tr>
                                     )}

@@ -43,7 +43,7 @@ export default function StudentTeachers({ studentTeachers }) {
     useEffect(() => {
         const filtered = Array.isArray(studentTeachers)
             ? studentTeachers.filter((teacher) => {
-                  const matchesSearch = teacher.name
+                  const matchesSearch = teacher.first_name
                       .toLowerCase()
                       .includes(searchQuery.toLowerCase());
                   const matchesStatus =
@@ -129,7 +129,7 @@ export default function StudentTeachers({ studentTeachers }) {
                                         className="p-2 border border-gray-300 rounded-lg"
                                     >
                                         <option value="">All Statuses</option>
-                                        <option value="not_blacklisted">
+                                        <option value="notblacklisted">
                                             Not Blacklisted
                                         </option>
                                         <option value="blacklisted">
@@ -168,13 +168,13 @@ export default function StudentTeachers({ studentTeachers }) {
                                 <thead>
                                     <tr className="bg-gray-50">
                                         <th className="text-left p-4 border border-gray-200">
-                                            Name
+                                             Full Name
                                         </th>
                                         <th className="text-left p-4 border border-gray-200">
-                                            Email
+                                            Province
                                         </th>
                                         <th className="text-left p-4 border border-gray-200">
-                                            Course
+                                            School
                                         </th>
                                         <th className="text-left p-4 border border-gray-200">
                                             Status
@@ -194,7 +194,7 @@ export default function StudentTeachers({ studentTeachers }) {
                                                     {teacher?.last_name}
                                                 </td>
                                                 <td className="p-4">
-                                                    {teacher?.email}
+                                                    {teacher?.location_province}
                                                 </td>
                                                 <td className="p-4">
                                                     {teacher?.university}
@@ -203,15 +203,15 @@ export default function StudentTeachers({ studentTeachers }) {
                                                     <span
                                                         className={`px-2 py-1 text-sm rounded-lg ${
                                                             teacher?.status ===
-                                                            "inactive"
+                                                            "notblacklisted"
                                                                 ? "bg-red-100 text-red-600"
                                                                 : "bg-green-100 text-green-600"
                                                         }`}
                                                     >
                                                         {teacher?.status ===
-                                                        "inactive"
-                                                            ? "Inactive"
-                                                            : "Active"}
+                                                        "notblacklisted"
+                                                            ? "not blacklisted"
+                                                            : "blacklisted"}
                                                     </span>
                                                 </td>
                                             </tr>

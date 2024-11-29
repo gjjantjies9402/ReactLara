@@ -19,7 +19,7 @@ class CreateStudentTeachersTable extends Migration
             $table->string('location_city');
             $table->string('location_street');
             $table->string('university');
-            $table->string('status')->default('inactive'); // Added the status column
+            $table->string('status')->default('notblacklisted'); // Added the status column
             $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key to schools table
             $table->string('school_name')->nullable(); // Add a column to store school name
             $table->timestamps();

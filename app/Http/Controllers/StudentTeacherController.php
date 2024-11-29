@@ -39,7 +39,7 @@ class StudentTeacherController extends Controller
             'location_city' => 'required|string|max:255',
             'location_street' => 'required|string|max:255',
             'university' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:blacklisted,notblacklisted',
             'school_id' => 'required|exists:schools,id', // Ensure school_id exists
         ]);
     
@@ -94,7 +94,7 @@ class StudentTeacherController extends Controller
             'location_city' => 'required|string|max:255',
             'location_street' => 'required|string|max:255',
             'university' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:blacklisted,notblacklisted',
             'school_id' => 'required|exists:schools,id', // Ensure school_id exists
         ]);
     
@@ -153,7 +153,7 @@ class StudentTeacherController extends Controller
                     'location_street' => $studentTeachersData['location_street'] ?? '',
                     'university' => $studentTeachersData['university'] ?? '',
                     'school_id' => $studentTeachersData['school_id'] ?? '',
-                    'status' => $studentTeachersData['status'] ?? 'inactive',
+                    'status' => $studentTeachersData['status'] ?? 'notblacklisted',
                 ]);
             }
             fclose($handle);

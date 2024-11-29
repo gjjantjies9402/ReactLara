@@ -45,6 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/student-teachers/{id}', [StudentTeacherController::class, 'show']);
     Route::put('/student-teachers/{id}', [StudentTeacherController::class, 'update']);
     
+    Route::post('/api/blacklist-records', [BlacklistRecordController::class, 'store']);
+    Route::post('/upload-csv-blacklist', [BlacklistRecordController::class, 'uploadCsv']);
+    Route::get('/api/blacklist-records', [BlacklistRecordController::class, 'index']);
+    Route::get('/blacklist-records/{id}', [BlacklistRecordController::class, 'show']);
+    Route::put('/blacklist-records/{id}', [BlacklistRecordController::class, 'update']);
 });
 
 require __DIR__.'/auth.php';

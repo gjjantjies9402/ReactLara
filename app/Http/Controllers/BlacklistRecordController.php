@@ -122,4 +122,36 @@ class BlacklistRecordController extends Controller
 
         return redirect()->route('blacklistRecords.index')->with('success', 'Blacklist record deleted successfully!');
     }
+    public function uploadCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('csv_file');
+        $blacklist = [];
+
+        // Process the CSV file
+        if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
+            $header = fgetcsv($handle); // Assuming the first row is the header
+            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                $blacklistedData = array_combine($header, $row);
+                $blacklist[] = $blacklistedData;
+
+                // Insert each row into the database
+                StudentTeacher::create([
+                    'student_teacher_id' => $blacklistedData['student_teacher_id'] ?? '',
+                    'school_id' => $blacklistedData['school_id'] ?? '',
+                    'reason' => $blacklistedData['reason'] ?? '',
+                    'proof' => $blacklistedData['proof'] ?? '',
+                    ]);
+            }
+            fclose($handle);
+        }
+
+        return response()->json([
+            'message' => 'CSV uploaded and processed successfully!',
+            'blacklist' => $blacklist,
+        ], 200);
+    }
 }

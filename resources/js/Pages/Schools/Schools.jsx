@@ -16,7 +16,7 @@ export default function Schools({schools}) {
         const fetchSchools = async () => {
             try {
                 const response = await axios.get("/api/schools");
-                console.log(response.data); // Add this line for debugging
+                console.log(response.data); 
                 if (Array.isArray(response.data)) {
                     setSchools(response.data);
                     console.log("Schools fetched successfully!", response.data);
